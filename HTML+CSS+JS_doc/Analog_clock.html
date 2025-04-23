@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>아날로그 시계</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: pink;
+      color: #cfcfcf;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .clock {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      border: 8px solid navy;
+      border-radius: 50%;
+      background: beige;
+    }
+
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      transform: translateX(-50%) rotate(0deg);
+    }
+
+    .hour {
+      width: 6px;
+      height: 80px;
+      background: black;
+      z-index: 3;
+    }
+
+    .minute {
+      width: 4px;
+      height: 110px;
+      background: black;
+      z-index: 2;
+    }
+
+    .second {
+      width: 2px;
+      height: 140px;
+      background: red;
+      z-index: 1;
+    }
+
+    .center-dot {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: green;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 4;
+    }
+
+    .number {
+        position: absolute;
+        color: black;
+        font-size: 1.2rem;
+        font-weight: bold;
+        transform: translate(-50%, -50%);
+      }
+
+    .digital {
+      margin: 30px;
+      padding: 10px;
+      background-color: navy;
+      width: 45%;
+      color: lightgreen;
+      font-size: 3rem;
+      text-align: center;
+      border-radius: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="clock" id="clock">
+    <div class="hand hour" id="hourHand"></div>
+    <div class="hand minute" id="minuteHand"></div>
+    <div class="hand second" id="secondHand"></div>
+    <div class="center-dot"></div>
+  </div>
+  <div class="digital" id="digitalClock">00:00:00</div>
+
+  <script>
+    // 숫자 추가
+    const clock = document.getElementById('clock');
+    for (let i = 1; i <= 12; i++) {
+        const number = document.createElement('div');
+        number.className = 'number';
+        number.innerText = i;
+        const angle = (i - 3) * 30 * Math.PI / 180;
+        const radius = 130; // 숫자 배치 반지름
+        const x = 150 + radius * Math.cos(angle); // 시계 중심은 150,150
+        const y = 150 + radius * Math.sin(angle);
+        number.style.left = `${x}px`;
+        number.style.top = `${y}px`;
+        clock.appendChild(number);
+    }
+
+    function updateClock() {
+      const now = new Date();
+
+      const seconds = now.getSeconds();
+      const minutes = now.getMinutes();
+      const hours = now.getHours();
+
+      const secondDeg = seconds * 6; // 360 / 60
+      const minuteDeg = minutes * 6 + seconds * 0.1;
+      const hourDeg = (hours % 12) * 30 + minutes * 0.5;
+
+      document.getElementById("secondHand").style.transform = `translateX(-50%) rotate(${secondDeg}deg)`;
+      document.getElementById("minuteHand").style.transform = `translateX(-50%) rotate(${minuteDeg}deg)`;
+      document.getElementById("hourHand").style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
+
+      const pad = num => num.toString().padStart(2, '0');
+      const digital = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+      document.getElementById("digitalClock").textContent = digital;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+</html>
