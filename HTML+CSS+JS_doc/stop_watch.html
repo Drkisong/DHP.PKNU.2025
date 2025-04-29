@@ -53,6 +53,14 @@
   </div>
 
   <div>
+    <label>경고 기능:</label>
+    <input type="radio" id="warningOn" name="warningOption" value="on" checked>
+    <label for="warningOn">사용</label>
+    <input type="radio" id="warningOff" name="warningOption" value="off">
+    <label for="warningOff">사용 안 함</label>
+  </div>
+
+  <div>
     <label>초과 시간 표시:</label>
     <input type="radio" id="overTimeOn" name="overTime" value="on" checked>
     <label for="overTimeOn">켜기</label>
@@ -66,17 +74,21 @@
   <button onclick="pauseTimer()">Pause</button>
   <button onclick="resetTimer()">Reset</button>
 
+
   <script>
     let timer;
     let totalSeconds = 0;
     let remainingSeconds = 0;
-    let elapsedSeconds = 0;
     let isRunning = false;
     let userWarningTime = 10;
     let warningTriggered = false;
 
     function isOvertimeEnabled() {
       return document.getElementById('overTimeOn').checked;
+    }
+
+    function isWarningEnabled() {
+      return document.getElementById('warningOn').checked;
     }
 
     function updateDisplay() {
@@ -92,7 +104,12 @@
       const sec = String(displaySeconds % 60).padStart(2, '0');
       document.getElementById("timeDisplay").textContent = `${prefix}${min}:${sec}`;
 
-      if (remainingSeconds === userWarningTime && !warningTriggered) {
+      // 경고 조건
+      if (
+        isWarningEnabled() &&
+        remainingSeconds === userWarningTime &&
+        !warningTriggered
+      ) {
         document.body.classList.add("warning");
         warningTriggered = true;
         setTimeout(() => {
@@ -108,7 +125,7 @@
       const secInput = parseInt(document.getElementById("seconds").value) || 0;
       userWarningTime = parseInt(document.getElementById("warningTime").value) || 10;
 
-      if (remainingSeconds === 0 && elapsedSeconds === 0) {
+      if (remainingSeconds === 0) {
         totalSeconds = minInput * 60 + secInput;
         if (totalSeconds <= 0) return;
         remainingSeconds = totalSeconds;
@@ -131,7 +148,6 @@
       clearInterval(timer);
       isRunning = false;
       remainingSeconds = 0;
-      elapsedSeconds = 0;
       warningTriggered = false;
       document.body.classList.remove("warning");
       updateDisplay();
